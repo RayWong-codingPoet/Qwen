@@ -111,12 +111,14 @@ def _gc():
 
 
 def _launch_demo(args, model, tokenizer, config):
-    def predict(_query, _chatbot, _task_history, system_prompt):
+    def predict(_query, _chatbot, _task_history, system_prompt, max_length, top_p, temperature):
         print(f"User: {_parse_text(_query)}")
         _chatbot.append((_parse_text(_query), ""))
         full_response = ""
 
         for response in model.chat_stream(tokenizer, _query, history=_task_history, system=system_prompt,
+                                          max_new_tokens=max_length, top_p=top_p,
+                                          temperature=temperature,
                                           generation_config=config):
             _chatbot[-1] = (_parse_text(_query), _parse_text(response))
 
@@ -176,8 +178,17 @@ Qwen-14B-Chat <a href="https://modelscope.cn/models/qwen/Qwen-14B-Chat/summary">
                 label="System Prompt (Only for chat mode)",
                 height=300
             )
-
-        submit_btn.click(predict, [query, chatbot, task_history, system_prompt], [chatbot], show_progress=True)
+        with gr.Row():
+            max_length = gr.Slider(0, 32768, value=8192, step=1.0, label="Maximum length", interactive=True)
+            top_p = gr.Slider(0, 1, value=0.8, step=0.01, label="Top P", interactive=True)
+            temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
+        with gr.Row():
+            system_prompt = gr.TextArea(
+                label="System Prompt (Only for chat mode)",
+                height=300
+            )
+        submit_btn.click(predict, [query, chatbot, task_history, system_prompt, max_length, top_p, temperature],
+                         [chatbot], show_progress=True)
         submit_btn.click(reset_user_input, [], [query])
         empty_btn.click(reset_state, [chatbot, task_history], outputs=[chatbot], show_progress=True)
         regen_btn.click(regenerate, [chatbot, task_history], [chatbot], show_progress=True)
