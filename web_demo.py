@@ -190,10 +190,8 @@ including hate speech, violence, pornography, deception, etc. \
 包括但不限于仇恨言论、暴力、色情、欺诈相关的有害信息。)""")
 
     demo.queue().launch(
-        share=args.share,
-        inbrowser=args.inbrowser,
-        server_port=args.server_port,
-        server_name=args.server_name,
+        share=False, debug=True, server_name="0.0.0.0", inbrowser=True,
+        auth=("adminandmin", "vnljksadfu8oilrk32%@vsdaf#")
     )
 
 
