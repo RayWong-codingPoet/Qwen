@@ -116,7 +116,7 @@ def _launch_demo(args, model, tokenizer, config):
         _chatbot.append((_parse_text(_query), ""))
         full_response = ""
 
-        for response in model.chat_stream(tokenizer, _query, history=_task_history, system=system_prompt,
+        for response in model.chat_stream(tokenizer, _query, history=_task_history,
                                           max_new_tokens=max_length, top_p=top_p,
                                           temperature=temperature,
                                           generation_config=config):
@@ -166,7 +166,7 @@ Qwen-14B-Chat <a href="https://modelscope.cn/models/qwen/Qwen-14B-Chat/summary">
 <a href="https://huggingface.co/Qwen/Qwen-14B-Chat">🤗</a>&nbsp ｜ 
 &nbsp<a href="https://github.com/QwenLM/Qwen">Github</a></center>""")
 
-        chatbot = gr.Chatbot(label='Qwen-Chat', elem_classes="control-height",height=500)
+        chatbot = gr.Chatbot(label='Qwen-Chat', elem_classes="control-height",height=800)
         query = gr.Textbox(lines=2, label='Input')
         task_history = gr.State([])
 
