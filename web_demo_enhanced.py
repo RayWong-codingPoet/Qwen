@@ -95,7 +95,7 @@ with gr.Blocks() as demo:
             max_length = gr.Slider(0, 32768, value=8192, step=1.0, label="Maximum length", interactive=True)
             top_p = gr.Slider(0, 1, value=0.8, step=0.01, label="Top P", interactive=True)
             temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
-            system_prompt = gr.text_area(
+            system_prompt = gr.TextArea(
                 label="System Prompt (Only for chat mode)",
                 height=300
             )
