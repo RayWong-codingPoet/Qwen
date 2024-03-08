@@ -174,14 +174,10 @@ Qwen-14B-Chat <a href="https://modelscope.cn/models/qwen/Qwen-14B-Chat/summary">
             empty_btn = gr.Button("🧹 Clear History (清除历史)")
             submit_btn = gr.Button("🚀 Submit (发送)")
             regen_btn = gr.Button("🤔️ Regenerate (重试)")
-            system_prompt = gr.TextArea(
-                label="System Prompt (Only for chat mode)",
-                height=300
-            )
         with gr.Row():
             max_length = gr.Slider(0, 32768, value=8192, step=1.0, label="Maximum length", interactive=True)
-            top_p = gr.Slider(0, 1, value=0.8, step=0.01, label="Top P", interactive=True)
-            temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
+            top_p = gr.Slider(0, 2, value=0.8, step=0.01, label="Top P", interactive=True)
+            temperature = gr.Slider(0, 2, value=0.95, step=0.01, label="Temperature", interactive=True)
         with gr.Row():
             system_prompt = gr.TextArea(
                 label="System Prompt (Only for chat mode)",
