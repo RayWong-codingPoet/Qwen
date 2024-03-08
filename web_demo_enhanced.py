@@ -59,16 +59,54 @@ def parse_text(text):
     return text
 
 
-def predict(input, system_prompt, chatbot, max_length, top_p, temperature, history, past_key_values):
-    chatbot.append((parse_text(input), ""))
-    for response, history, past_key_values in model.chat_stream(tokenizer, input, history,
-                                                                past_key_values=past_key_values,
-                                                                return_past_key_values=True,
-                                                                max_new_tokens=max_length, top_p=top_p,
-                                                                temperature=temperature, system=system_prompt):
-        chatbot[-1] = (parse_text(input), parse_text(response))
+def _parse_text(text):
+    lines = text.split("\n")
+    lines = [line for line in lines if line != ""]
+    count = 0
+    for i, line in enumerate(lines):
+        if "```" in line:
+            count += 1
+            items = line.split("`")
+            if count % 2 == 1:
+                lines[i] = f'<pre><code class="language-{items[-1]}">'
+            else:
+                lines[i] = f"<br></code></pre>"
+        else:
+            if i > 0:
+                if count % 2 == 1:
+                    line = line.replace("`", r"\`")
+                    line = line.replace("<", "&lt;")
+                    line = line.replace(">", "&gt;")
+                    line = line.replace(" ", "&nbsp;")
+                    line = line.replace("*", "&ast;")
+                    line = line.replace("_", "&lowbar;")
+                    line = line.replace("-", "&#45;")
+                    line = line.replace(".", "&#46;")
+                    line = line.replace("!", "&#33;")
+                    line = line.replace("(", "&#40;")
+                    line = line.replace(")", "&#41;")
+                    line = line.replace("$", "&#36;")
+                lines[i] = "<br>" + line
+    text = "".join(lines)
+    return text
 
-        yield chatbot, history, past_key_values
+
+def predict(input, system_prompt, chatbot, max_length, top_p, temperature, history, past_key_values):
+    print(f"User: {_parse_text(input)}")
+
+    chatbot.append((parse_text(input), ""))
+    full_response = ""
+    for response in model.chat_stream(tokenizer, input, history=past_key_values,
+                                      max_new_tokens=max_length, top_p=top_p,
+                                      temperature=temperature, system=system_prompt):
+        chatbot[-1] = (parse_text(input), parse_text(response))
+        yield chatbot
+        full_response = _parse_text(response)
+
+    print(f"History: {past_key_values}")
+    past_key_values.append((input, full_response))
+    print(f"Qwen-Chat: {_parse_text(full_response)}")
+    yield history, past_key_values
 
 
 def reset_user_input():
