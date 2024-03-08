@@ -4,16 +4,12 @@
 # LICENSE file in the root directory of this source tree.
 
 """A simple web interactive chat demo based on gradio."""
-import os
-from argparse import ArgumentParser
-
 import gradio as gr
 import mdtex2html
-
 import torch
+from argparse import ArgumentParser
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation import GenerationConfig
-
 
 DEFAULT_CKPT_PATH = 'Qwen/Qwen-7B-Chat'
 
@@ -115,13 +111,13 @@ def _gc():
 
 
 def _launch_demo(args, model, tokenizer, config):
-
-    def predict(_query, _chatbot, _task_history):
+    def predict(_query, _chatbot, _task_history, system_prompt):
         print(f"User: {_parse_text(_query)}")
         _chatbot.append((_parse_text(_query), ""))
         full_response = ""
 
-        for response in model.chat_stream(tokenizer, _query, history=_task_history, generation_config=config):
+        for response in model.chat_stream(tokenizer, _query, history=_task_history, system=system_prompt,
+                                          generation_config=config):
             _chatbot[-1] = (_parse_text(_query), _parse_text(response))
 
             yield _chatbot
@@ -176,8 +172,12 @@ Qwen-14B-Chat <a href="https://modelscope.cn/models/qwen/Qwen-14B-Chat/summary">
             empty_btn = gr.Button("🧹 Clear History (清除历史)")
             submit_btn = gr.Button("🚀 Submit (发送)")
             regen_btn = gr.Button("🤔️ Regenerate (重试)")
+            system_prompt = gr.TextArea(
+                label="System Prompt (Only for chat mode)",
+                height=300
+            )
 
-        submit_btn.click(predict, [query, chatbot, task_history], [chatbot], show_progress=True)
+        submit_btn.click(predict, [query, chatbot, task_history, system_prompt], [chatbot], show_progress=True)
         submit_btn.click(reset_user_input, [], [query])
         empty_btn.click(reset_state, [chatbot, task_history], outputs=[chatbot], show_progress=True)
         regen_btn.click(regenerate, [chatbot, task_history], [chatbot], show_progress=True)
