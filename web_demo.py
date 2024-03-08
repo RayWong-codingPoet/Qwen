@@ -129,13 +129,13 @@ def _launch_demo(args, model, tokenizer, config):
         _task_history.append((_query, full_response))
         print(f"Qwen-Chat: {_parse_text(full_response)}")
 
-    def regenerate(_chatbot, _task_history):
+    def regenerate(_chatbot, _task_history, system_prompt, max_length, top_p, temperature):
         if not _task_history:
             yield _chatbot
             return
         item = _task_history.pop(-1)
         _chatbot.pop(-1)
-        yield from predict(item[0], _chatbot, _task_history)
+        yield from predict(item[0], _chatbot, _task_history, system_prompt, max_length, top_p, temperature)
 
     def reset_user_input():
         return gr.update(value="")
@@ -187,7 +187,8 @@ Qwen-14B-Chat <a href="https://modelscope.cn/models/qwen/Qwen-14B-Chat/summary">
                          [chatbot], show_progress=True)
         submit_btn.click(reset_user_input, [], [query])
         empty_btn.click(reset_state, [chatbot, task_history], outputs=[chatbot], show_progress=True)
-        regen_btn.click(regenerate, [chatbot, task_history], [chatbot], show_progress=True)
+        regen_btn.click(regenerate, [chatbot, task_history, system_prompt, max_length, top_p, temperature], [chatbot],
+                        show_progress=True)
 
         gr.Markdown("""\
 <font size=2>Note: This demo is governed by the original license of Qwen. \
