@@ -100,13 +100,12 @@ def predict(input, system_prompt, chatbot, max_length, top_p, temperature, histo
                                       max_new_tokens=max_length, top_p=top_p,
                                       temperature=temperature, system=system_prompt):
         chatbot[-1] = (parse_text(input), parse_text(response))
-        yield chatbot
         full_response = _parse_text(response)
 
     print(f"History: {past_key_values}")
     past_key_values.append((input, full_response))
     print(f"Qwen-Chat: {_parse_text(full_response)}")
-    yield history, past_key_values
+    yield chatbot, history, past_key_values
 
 
 def reset_user_input():
