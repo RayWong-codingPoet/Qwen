@@ -166,7 +166,7 @@ Qwen-14B-Chat <a href="https://modelscope.cn/models/qwen/Qwen-14B-Chat/summary">
 <a href="https://huggingface.co/Qwen/Qwen-14B-Chat">🤗</a>&nbsp ｜ 
 &nbsp<a href="https://github.com/QwenLM/Qwen">Github</a></center>""")
 
-        chatbot = gr.Chatbot(label='Qwen-Chat', elem_classes="control-height")
+        chatbot = gr.Chatbot(label='Qwen-Chat', elem_classes="control-height",height=500)
         query = gr.Textbox(lines=2, label='Input')
         task_history = gr.State([])
 
